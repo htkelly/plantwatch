@@ -50,6 +50,7 @@ class Plantwatcher:
         self.parameters = {}
         self.rabbitConnection = pika.BlockingConnection(pika.ConnectionParameters(env_vars["RABBITMQ_SERVER"], credentials=self.rabbitCreds))
         self.rabbitChannel = self.rabbitConnection.channel()
+        self.sendHeartbeatMessage()
         logging.info(f"Device initialized with id {self.id} at {str(self.initTime)}")
 
     # Adapted from this SO answer: https://raspberrypi.stackexchange.com/questions/133457/how-can-rpi4b-use-python-to-talk-to-the-i2c-dht20-sht20-temperature-and-humidi
@@ -84,6 +85,11 @@ class Plantwatcher:
             self.parameters = receivedParams
         else:
             logging.info("No command data received")
+
+    def sendHeartbeatMessage(self):
+        self.rabbitChannel.queue_declare(queue=f"plantwatch_heartbeat")
+        self.rabbitChannel.basic_publish(exchange='', routing_key="plantwatch_heartbeat", body=str(self.id))
+        logging.info("Sent heartbeat message")
 
     #The below logic would likely lead to erratic and/or delayed actuator behaviour, but as our actuators are still just LEDs, this will work for proof-of-concept
     def updateActuators(self):
@@ -124,6 +130,7 @@ def main():
         newReading = Reading(temperature=temperature, deviceId = watcher.id, humidity=humidity, moisture=moisture, uvIndex=uvIndex)
         watcher.latestReading = newReading
         logging.info(f"Took a reading: {str(newReading.reading_data)}")
+        watcher.sendHeartbeatMessage()
         watcher.sendReadingMessage(newReading.reading_data)
         watcher.getCommandMessage()
         watcher.updateActuators()
