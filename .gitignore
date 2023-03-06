@@ -1,0 +1,4 @@
+.env
+__pycache__/
+grove_moisture_sensor.py
+seeed_si115x.py
