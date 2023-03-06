@@ -2,8 +2,6 @@
 
 import pika
 import logging
-import time
-import json
 import ast
 from pymongo import MongoClient
 from dotenv import dotenv_values
