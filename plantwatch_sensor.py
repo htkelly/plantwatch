@@ -29,25 +29,20 @@ class Actuator:
         self.state = False
 
 class Plantwatcher:
-    i2cbus = smbus.SMBus(1)
-    DHT20_I2C_ADDRESS = 0x38
-    lightSensor = grove_si115x()
-    moistureSensor = GroveMoistureSensor(0)
-
-    waterPump = Actuator(19)
-    heater = Actuator(18)
-    cooler = Actuator(23)
-    extractorFan = Actuator(6)
-
-    rabbitCreds = pika.credentials.PlainCredentials(env_vars["RABBITMQ_USER"], env_vars["RABBITMQ_PASSWORD"], erase_on_connect=False)
-    rabbitConnection = None
-    rabbitChannel = None
-
     def __init__(self):
         self.id = uuid4()
         self.initTime = datetime.datetime.utcnow()
-        self.latestReading = None
+        self.i2cbus = smbus.SMBus(1)
+        self.DHT20_I2C_ADDRESS = 0x38
+        self.lightSensor = grove_si115x()
+        self.moistureSensor = GroveMoistureSensor(0)
+        self.waterPump = Actuator(19)
+        self.heater = Actuator(18)
+        self.cooler = Actuator(23)
+        self.extractorFan = Actuator(6)
         self.parameters = {}
+        self.latestReading = None
+        self.rabbitCreds = pika.credentials.PlainCredentials(env_vars["RABBITMQ_USER"], env_vars["RABBITMQ_PASSWORD"], erase_on_connect=False)
         self.rabbitConnection = pika.BlockingConnection(pika.ConnectionParameters(env_vars["RABBITMQ_SERVER"], credentials=self.rabbitCreds))
         self.rabbitChannel = self.rabbitConnection.channel()
         self.sendHeartbeatMessage()
