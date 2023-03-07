@@ -83,8 +83,11 @@ class Plantwatcher:
 
     def sendHeartbeatMessage(self):
         deviceInfo={}
-        deviceInfo['deviceId']=self.id
-        deviceInfo['latestReading']=self.latestReading
+        deviceInfo['deviceId']=str(self.id)
+        if (self.latestReading):
+            deviceInfo['latestReading']=self.latestReading.reading_data
+        else:
+            deviceInfo['latestReading']=""
         self.rabbitChannel.queue_declare(queue=f"plantwatch_heartbeat")
         self.rabbitChannel.basic_publish(exchange='', routing_key="plantwatch_heartbeat", body=json.dumps(deviceInfo))
         logging.info("Sent heartbeat message")
