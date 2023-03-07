@@ -87,8 +87,11 @@ class Plantwatcher:
             logging.info("No command data received")
 
     def sendHeartbeatMessage(self):
+        deviceInfo={}
+        deviceInfo['deviceId']=self.id
+        deviceInfo['latestReading']=self.latestReading
         self.rabbitChannel.queue_declare(queue=f"plantwatch_heartbeat")
-        self.rabbitChannel.basic_publish(exchange='', routing_key="plantwatch_heartbeat", body=str(self.id))
+        self.rabbitChannel.basic_publish(exchange='', routing_key="plantwatch_heartbeat", body=json.dumps(deviceInfo))
         logging.info("Sent heartbeat message")
 
     #The below logic would likely lead to erratic and/or delayed actuator behaviour, but as our actuators are still just LEDs, this will work for proof-of-concept
