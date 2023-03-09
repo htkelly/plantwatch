@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from uuid import uuid4
+from bson import ObjectId
 import smbus
 import logging
 import time
@@ -30,7 +30,7 @@ class Actuator:
 
 class Plantwatcher:
     def __init__(self):
-        self.id = uuid4()
+        self.id = ObjectId()
         self.initTime = datetime.datetime.utcnow()
         self.i2cbus = smbus.SMBus(1)
         self.DHT20_I2C_ADDRESS = 0x38
@@ -68,7 +68,7 @@ class Plantwatcher:
     def sendReadingMessage(self, readingData):
         self.rabbitChannel.queue_declare(queue=f"plantwatch_readings")
         self.rabbitChannel.basic_publish(exchange='', routing_key="plantwatch_readings", body=str(readingData))
-        logging.info(f"Sent reading id {readingData['readingId']}")
+        logging.info(f"Sent reading id {readingData['_id']}")
 
     def getCommandMessage(self):
         self.rabbitChannel.queue_declare(queue=str(self.id))
@@ -83,11 +83,11 @@ class Plantwatcher:
 
     def sendHeartbeatMessage(self):
         deviceInfo={}
-        deviceInfo['deviceId']=str(self.id)
+        deviceInfo['_id']=str(self.id)
         if (self.latestReading):
-            deviceInfo['latestReading']=self.latestReading.reading_data
+            deviceInfo['latestReading']=self.latestReading.reading_data['_id']
         else:
-            deviceInfo['latestReading']=""
+            deviceInfo['latestReading']=None
         self.rabbitChannel.queue_declare(queue=f"plantwatch_heartbeat")
         self.rabbitChannel.basic_publish(exchange='', routing_key="plantwatch_heartbeat", body=json.dumps(deviceInfo))
         logging.info("Sent heartbeat message")
@@ -113,7 +113,7 @@ class Plantwatcher:
 class Reading:
     reading_data = {}
     def __init__(self, deviceId, temperature, humidity, moisture, uvIndex):
-        self.reading_data["readingId"] = str(uuid4())
+        self.reading_data["_id"] = str(ObjectId())
         self.reading_data["deviceId"] = str(deviceId)
         self.reading_data["timestamp"] = str(datetime.datetime.utcnow())
         self.reading_data["temperature"] = temperature
