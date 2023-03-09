@@ -33,7 +33,7 @@ class PlantwatchService:
     def heartbeatReceived(self, ch, method, properties, body):
         logging.info(f"Received a heartbeat: {body}")
         device = ast.literal_eval(body.decode('UTF-8'))
-        self.devices.update_one({'deviceId': device['deviceId']},{"$set":{'timestamp':str(datetime.datetime.utcnow()), 'latestReading':device['latestReading']}}, upsert=True)
+        self.devices.update_one({'_id': device['_id']},{"$set":{'timestamp':str(datetime.datetime.utcnow()), 'latestReading':device['latestReading']}}, upsert=True)
 
 def main():
     plantwatch = PlantwatchService()
