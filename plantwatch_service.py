@@ -4,6 +4,7 @@ import pika
 import logging
 import ast
 import datetime
+import json
 from pymongo import MongoClient
 from dotenv import dotenv_values
 
@@ -33,6 +34,12 @@ class PlantwatchService:
     def heartbeatReceived(self, ch, method, properties, body):
         logging.info(f"Received a heartbeat: {body}")
         device = ast.literal_eval(body.decode('UTF-8'))
+        foundDevice = self.devices.find_one({'_id' : device['_id']})
+        if (foundDevice):
+            logging.info(f"Device with id {device['_id']} already exists in database")
+            if ("parameters" in foundDevice):
+                logging.info(f"Parameters are set for {device['_id']}: {foundDevice['parameters']}, sending command message")
+                self.channel.basic_publish(exchange='', routing_key=str(device['_id']), body=str(json.dumps(foundDevice['parameters'])))
         self.devices.update_one({'_id': device['_id']},{"$set":{'timestamp':str(datetime.datetime.utcnow()), 'latestReading':device['latestReading']}}, upsert=True)
 
 def main():
