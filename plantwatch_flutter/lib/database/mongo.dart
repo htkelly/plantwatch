@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mongo_dart/mongo_dart.dart';
+import '../models/device.dart';
 import '../utils/constants.dart';
 
 class MongoDatabase {
@@ -42,5 +44,21 @@ class MongoDatabase {
       print(e);
       return Future.value(e as FutureOr<Map<String, dynamic>?>?);
     }
+  }
+
+  static setParameters(Device device, double minTemp, double maxTemp,
+      double minHum, double maxHum, double minMoist, double maxMoist) async {
+    var _device = await deviceCollection
+        .findOne(where.eq("_id", device.id.toHexString()));
+    var parameters = {
+      "minTemp": minTemp,
+      "maxTemp": maxTemp,
+      "minHum": minHum,
+      "maxHum": maxHum,
+      "minMoist": minMoist,
+      "maxMoist": maxMoist
+    };
+    _device["parameters"] = parameters;
+    await deviceCollection.save(_device);
   }
 }

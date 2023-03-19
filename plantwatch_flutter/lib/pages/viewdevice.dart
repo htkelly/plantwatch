@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:plantwatch_flutter/database/mongo.dart';
 import 'package:plantwatch_flutter/models/device.dart';
 
+import '../components/parameters_form.dart';
+
 class DeviceDetails extends StatefulWidget {
   @override
   _DeviceDetailsState createState() => _DeviceDetailsState();
@@ -18,10 +20,11 @@ class _DeviceDetailsState extends State<DeviceDetails> {
     final Device device = ModalRoute.of(context)!.settings.arguments as Device;
     var widgetText = 'Device details';
     return Scaffold(
-      appBar: AppBar(
-        title: Text(device.id.toHexString()),
-      ),
-      body: Stack(),
-    );
+        appBar: AppBar(
+          title: Text(device.id.toHexString()),
+        ),
+        body: ParametersForm(
+          device: device,
+        ));
   }
 }
