@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'package:dotenv/dotenv.dart';
 import 'package:logging/logging.dart';
+import 'dart:convert';
 import 'package:mongo_dart/mongo_dart.dart';
-import '../utils/constants.dart';
+import '../lib/utils/constants.dart';
 
 main(List<String> arguments) async {
   Logger.root.level = Level.ALL;
@@ -18,8 +19,38 @@ main(List<String> arguments) async {
   var deviceCollection = db.collection(DEVICE_COLLECTION);
   var readingCollection = db.collection(READING_COLLECTION);
 
-  server.listen((HttpRequest request) {
-    request.response.write("Hello world!");
+server.listen((HttpRequest request) async {
+  if (request.uri.path == "/") {
+    request.response.statusCode = HttpStatus.OK;
+    request.response.write("Plantwatch API");
     request.response.close();
-  });
+  } else if (request.uri.path == "/devices" && request.method == 'GET') {
+    request.response.statusCode = HttpStatus.OK;
+    request.response.write(json.encode(await deviceCollection.find().toList()));
+    request.response.close();
+    }  else if (request.uri.path.startsWith("/devices") && request.method == 'PUT' && request.uri.pathSegments.length == 2) {
+        var deviceId = request.uri.pathSegments[1];
+        var device = await deviceCollection.findOne(where.eq("_id", deviceId));
+        var content = await utf8.decoder.bind(request).join();
+        var parameters = json.decode(content);
+        device!["parameters"] = parameters;
+        await deviceCollection.save(device);
+        request.response.statusCode = HttpStatus.accepted;
+        request.response.write(json.encode(device));
+        request.response.close();
+  } else if (request.uri.path.startsWith("/readings") && request.method == 'GET'){
+      if (request.uri.pathSegments.length == 1) {
+        request.response.statusCode = HttpStatus.OK;
+        request.response.write(json.encode(await readingCollection.find().toList()));
+        request.response.close();
+      } else if (request.uri.pathSegments.length == 2){
+        request.response.write(await json.encode(readingCollection.findOne(where.eq("_id", request.uri.pathSegments[1]))));
+        request.response.close();
+      }
+  } else {
+    request.response.statusCode = HttpStatus.badRequest;
+    request.response.write("Bad request");
+    request.response.close();
+  }
+});
 }
