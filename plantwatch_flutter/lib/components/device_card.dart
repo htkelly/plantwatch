@@ -121,19 +121,21 @@ class _DeviceCardState extends State<DeviceCard> {
                 ),
                 children: <TextSpan>[
                   TextSpan(
-                      text: '\nTemperature: ${reading.temperature}',
+                      text:
+                          '\nTemperature: ${reading.temperature.toStringAsFixed(2)}',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 15,
                       )),
                   TextSpan(
-                      text: '\nHumidity: ${reading.humidity}',
+                      text:
+                          '\nHumidity: ${reading.humidity.toStringAsFixed(2)}',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 15,
                       )),
                   TextSpan(
-                      text: '\nMoisture: ${reading.moisture}',
+                      text: '\nMoisture: ${reading.moisture / 10} %',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 15,
