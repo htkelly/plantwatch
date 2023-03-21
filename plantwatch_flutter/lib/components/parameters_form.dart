@@ -1,7 +1,5 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
-import 'package:plantwatch_flutter/database/mongo.dart';
+import 'package:plantwatch_flutter/api/device_api.dart';
 import 'package:plantwatch_flutter/models/device.dart';
 
 // Define a custom Form widget.
@@ -105,7 +103,7 @@ class ParametersFormState extends State<ParametersForm> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Processing Data')),
                 );
-                MongoDatabase.setParameters(
+                DeviceApi.setDeviceParameters(
                     widget.device,
                     double.parse(minTempController.text),
                     double.parse(maxTempController.text),

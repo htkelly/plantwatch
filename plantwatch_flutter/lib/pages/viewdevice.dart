@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:plantwatch_flutter/database/mongo.dart';
 import 'package:plantwatch_flutter/models/device.dart';
 
 import '../components/parameters_form.dart';

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:plantwatch_flutter/database/mongo.dart';
 import 'package:plantwatch_flutter/pages/dashboard.dart';
 
 void main() async {
@@ -12,7 +11,6 @@ void main() async {
     // ignore: avoid_print
     print('${record.level.name}: ${record.time}: ${record.message}');
   });
-  await MongoDatabase.connect();
   runApp(MyApp());
 }
 

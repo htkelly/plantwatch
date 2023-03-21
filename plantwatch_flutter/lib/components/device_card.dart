@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:plantwatch_flutter/database/mongo.dart';
+import 'package:plantwatch_flutter/api/reading_api.dart';
 import '../models/device.dart';
 import '../models/reading.dart';
 
@@ -24,7 +24,8 @@ class _DeviceCardState extends State<DeviceCard> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: MongoDatabase.getReadingById(widget.device.latestReading),
+        future: ReadingApi.getReadingById(
+            widget.device.latestReading.toHexString()),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Container(

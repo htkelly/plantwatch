@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:plantwatch_flutter/database/mongo.dart';
+import 'package:plantwatch_flutter/api/device_api.dart';
 import 'package:plantwatch_flutter/models/device.dart';
 import 'package:plantwatch_flutter/components/device_card.dart';
 import 'package:plantwatch_flutter/pages/viewdevice.dart';
@@ -18,7 +18,7 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: MongoDatabase.getDevices(),
+        future: DeviceApi.getDevices(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Container(
