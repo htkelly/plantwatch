@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.plantwatch_flutter">
+    package="com.plantwatch.flutter_flutter">
    <application
         android:label="plantwatch_flutter"
         android:name="${applicationName}"

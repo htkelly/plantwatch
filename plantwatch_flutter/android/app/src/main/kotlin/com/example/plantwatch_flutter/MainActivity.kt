@@ -1,4 +1,4 @@
-package com.example.plantwatch_flutter
+package com.plantwatch.flutter_flutter
 
 import io.flutter.embedding.android.FlutterActivity
 

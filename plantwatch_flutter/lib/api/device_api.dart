@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
@@ -12,6 +13,20 @@ class DeviceApi {
     try {
       var requestUrl = Uri.http(baseUrl, "/devices");
       var response = await http.get(requestUrl);
+      return json.decode(response.body);
+    } catch (e) {
+      print(e);
+      return Future.value(e as FutureOr<List<dynamic>>?);
+    }
+  }
+
+  static Future<List<dynamic>> getUserDevices() async {
+    try {
+      var token = await FirebaseAuth.instance.currentUser!.getIdToken();
+
+      var requestUrl = Uri.http(baseUrl, "/devices");
+      var response = await http
+          .get(requestUrl, headers: {"Authorization": "Bearer ${token}"});
       return json.decode(response.body);
     } catch (e) {
       print(e);

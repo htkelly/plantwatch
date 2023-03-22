@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterfire_ui/auth.dart';
 import 'package:plantwatch_flutter/api/device_api.dart';
 import 'package:plantwatch_flutter/models/device.dart';
 import 'package:plantwatch_flutter/components/device_card.dart';
@@ -18,7 +19,7 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: DeviceApi.getDevices(),
+        future: DeviceApi.getUserDevices(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Container(
@@ -41,7 +42,30 @@ class _DashboardState extends State<Dashboard> {
             } else {
               return Scaffold(
                 appBar: AppBar(
-                  title: Text('Plantwatch'),
+                  title: Text("Plantwatch Dashboard"),
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.person),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute<ProfileScreen>(
+                            builder: (context) => ProfileScreen(
+                              appBar: AppBar(
+                                title: const Text('Plantwatch Profile'),
+                              ),
+                              actions: [
+                                SignedOutAction((context) {
+                                  Navigator.of(context).pop();
+                                })
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  ],
+                  automaticallyImplyLeading: false,
                 ),
                 body: ListView.builder(
                   itemBuilder: (context, index) {

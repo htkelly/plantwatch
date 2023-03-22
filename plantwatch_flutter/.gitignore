@@ -43,5 +43,8 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-#Environmental variables
+# Environmental variables
 .env
+
+# Firebase
+/lib/firebase_options.dart

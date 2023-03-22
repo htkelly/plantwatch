@@ -39,6 +39,9 @@ dependencies:
   font_awesome_flutter: ^10.4.0
   flutter_dotenv: ^5.0.2
   http: ^0.13.5
+  firebase_auth: ^4.3.0
+  firebase_core: ^2.8.0
+  flutterfire_ui: ^0.4.3+20
 
 dev_dependencies:
   flutter_test:
