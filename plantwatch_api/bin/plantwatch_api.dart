@@ -4,6 +4,7 @@ import 'package:logging/logging.dart';
 import 'dart:convert';
 import 'package:mongo_dart/mongo_dart.dart';
 import '../lib/utils/constants.dart';
+import 'package:firebase_admin/firebase_admin.dart';
 
 main(List<String> arguments) async {
   Logger.root.level = Level.ALL;
@@ -12,6 +13,9 @@ main(List<String> arguments) async {
     print('${record.level.name}: ${record.time}: ${record.message}');
   });
   var env = DotEnv(includePlatformEnvironment: true)..load();
+  var fb = FirebaseAdmin.instance.initializeApp(AppOptions(
+    credential: FirebaseAdmin.instance.certFromPath('../service-account.json'),
+  ));
   int port = 8085;
   var server = await HttpServer.bind(env['API_SERVER_IP'], port);
   Db db = Db(env['MONGO_CONN_URL']!);
@@ -31,8 +35,10 @@ server.listen((HttpRequest request) async {
     request.response.headers.add("Access-Control-Allow-Origin", "*");
     request.response.headers.add("Access-Control-Allow-Headers", "*");
     request.response.headers.add("Access-Control-Allow-Methods", "POST,GET,DELETE,PUT,OPTIONS");
+    var auth = request.headers['Authorization'];
+    var token = await fb.auth().verifyIdToken(auth![0].split(' ')[1]);
     request.response.statusCode = HttpStatus.OK;
-    request.response.write(json.encode(await deviceCollection.find().toList()));
+    request.response.write(json.encode(await deviceCollection.find(where.eq("userId", token.claims.subject)).toList()));
     request.response.close();
     } else if (request.uri.path.startsWith("/devices") && request.method == 'OPTIONS') {
       // This is required so that this route will work without disabling CORS/web security on the frontend application
