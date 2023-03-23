@@ -34,6 +34,18 @@ class DeviceApi {
     }
   }
 
+  static addDeviceToAccount(String deviceId) async {
+    try {
+      var token = await FirebaseAuth.instance.currentUser!.getIdToken();
+      var requestUrl = Uri.http(baseUrl, "/devices/$deviceId/user");
+      var response = await http
+          .put(requestUrl, headers: {"Authorization": "Bearer ${token}"});
+    } catch (e) {
+      print(e);
+      return Future.value(e as FutureOr<List<dynamic>>?);
+    }
+  }
+
   static setDeviceParameters(Device device, double minTemp, double maxTemp,
       double minHum, double maxHum, double minMoist, double maxMoist) async {
     try {

@@ -3,6 +3,7 @@ import 'package:flutterfire_ui/auth.dart';
 import 'package:plantwatch_flutter/api/device_api.dart';
 import 'package:plantwatch_flutter/models/device.dart';
 import 'package:plantwatch_flutter/components/device_card.dart';
+import 'package:plantwatch_flutter/pages/add_device.dart';
 import 'package:plantwatch_flutter/pages/viewdevice.dart';
 
 class Dashboard extends StatefulWidget {
@@ -62,6 +63,19 @@ class _DashboardState extends State<Dashboard> {
                             ),
                           ),
                         );
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) {
+                              return DeviceAdd();
+                            },
+                          ),
+                        ).then((_) => setState(() {}));
                       },
                     )
                   ],
