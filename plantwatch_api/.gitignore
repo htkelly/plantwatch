@@ -4,3 +4,6 @@
 
 # Environmental variables
 .env
+
+# Firebase
+service-account.json
