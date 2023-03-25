@@ -60,7 +60,7 @@ server.listen((HttpRequest request) async {
         request.response.statusCode = HttpStatus.accepted;
         request.response.write(json.encode(device));
         request.response.close();
-  }else if (request.uri.path.startsWith("/devices") && request.method == 'PUT' && request.uri.pathSegments.length == 3 && request.uri.pathSegments[2] == 'user') {
+  } else if (request.uri.path.startsWith("/devices") && request.method == 'PUT' && request.uri.pathSegments.length == 3 && request.uri.pathSegments[2] == 'user') {
         var deviceId = request.uri.pathSegments[1];
         var auth = request.headers['Authorization'];
         var token = await fb.auth().verifyIdToken(auth![0].split(' ')[1]);
@@ -72,6 +72,10 @@ server.listen((HttpRequest request) async {
         request.response.headers.add("Access-Control-Allow-Methods", "POST,GET,DELETE,PUT,OPTIONS");
         request.response.statusCode = HttpStatus.accepted;
         request.response.write(json.encode(device));
+        request.response.close();
+  } else if (request.uri.path.startsWith("/devices") && request.method == 'GET' && request.uri.pathSegments.length == 3 && request.uri.pathSegments[2] == 'readings') {
+        var deviceId = request.uri.pathSegments[1];
+        request.response.write(await json.encode(await readingCollection.find(where.eq("deviceId", deviceId)).toList()));
         request.response.close();
   } else if (request.uri.path.startsWith("/readings") && request.method == 'GET'){
       if (request.uri.pathSegments.length == 1) {
