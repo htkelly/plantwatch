@@ -61,7 +61,11 @@ class _DeviceCardState extends State<DeviceCard> {
                               children: <Widget>[
                                 plantWatchIcon(),
                                 SizedBox(height: 10),
-                                deviceIdentifer(widget.device),
+                                deviceIdentifer(widget.device)
+                              ],
+                            ),
+                            Row(
+                              children: [
                                 latestReading(Reading.fromMap(snapshot.data!))
                               ],
                             )
@@ -79,11 +83,11 @@ class _DeviceCardState extends State<DeviceCard> {
     return const Padding(
       padding: EdgeInsets.only(left: 15.0),
       child: Align(
-          alignment: Alignment.centerLeft,
+          alignment: Alignment.center,
           child: Icon(
             FontAwesomeIcons.seedling,
             color: Colors.green,
-            size: 40,
+            size: 60,
           )),
     );
   }
@@ -92,7 +96,7 @@ class _DeviceCardState extends State<DeviceCard> {
     return Padding(
       padding: EdgeInsets.only(left: 15.0),
       child: Align(
-          alignment: Alignment.centerLeft,
+          alignment: Alignment.topLeft,
           child: RichText(
             text: TextSpan(
                 text: device.id.toHexString(),
