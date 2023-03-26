@@ -45,7 +45,6 @@ class Plantwatcher:
         self.rabbitCreds = pika.credentials.PlainCredentials(env_vars["RABBITMQ_USER"], env_vars["RABBITMQ_PASSWORD"], erase_on_connect=False)
         self.rabbitConnection = pika.BlockingConnection(pika.ConnectionParameters(env_vars["RABBITMQ_SERVER"], credentials=self.rabbitCreds))
         self.rabbitChannel = self.rabbitConnection.channel()
-        self.sendHeartbeatMessage()
         logging.info(f"Device initialized with id {self.id} at {str(self.initTime)}")
 
     # Adapted from this SO answer: https://raspberrypi.stackexchange.com/questions/133457/how-can-rpi4b-use-python-to-talk-to-the-i2c-dht20-sht20-temperature-and-humidi
