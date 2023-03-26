@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:plantwatch_flutter/components/chart.dart';
 import 'package:plantwatch_flutter/models/device.dart';
 
 import '../components/parameters_form.dart';
@@ -22,8 +23,26 @@ class _DeviceDetailsState extends State<DeviceDetails> {
         appBar: AppBar(
           title: Text(device.id.toHexString()),
         ),
-        body: ParametersForm(
-          device: device,
+        body: Column(
+          children: [
+            Row(
+              children: [
+                SizedBox(
+                  width: 800,
+                  height: 400,
+                  child: DeviceChart(device: device),
+                )
+              ],
+            ),
+            Row(
+              children: [
+                SizedBox(
+                    width: 400,
+                    height: 400,
+                    child: ParametersForm(device: device))
+              ],
+            )
+          ],
         ));
   }
 }

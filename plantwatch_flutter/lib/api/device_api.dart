@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:plantwatch_flutter/models/reading.dart';
 
 import '../models/device.dart';
 
@@ -40,6 +41,17 @@ class DeviceApi {
       var requestUrl = Uri.http(baseUrl, "/devices/$deviceId/user");
       var response = await http
           .put(requestUrl, headers: {"Authorization": "Bearer ${token}"});
+    } catch (e) {
+      print(e);
+      return Future.value(e as FutureOr<List<dynamic>>?);
+    }
+  }
+
+  static Future<List<dynamic>> getDeviceReadings(String deviceId) async {
+    try {
+      var requestUrl = Uri.http(baseUrl, "/devices/$deviceId/readings");
+      var response = await http.get(requestUrl);
+      return json.decode(response.body);
     } catch (e) {
       print(e);
       return Future.value(e as FutureOr<List<dynamic>>?);
