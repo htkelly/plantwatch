@@ -1,1 +1,3 @@
 # Plantwatch
+## What's this?
+Plantwatch is an IoT plant health monitoring and care system that utilises electronic sensors and a Raspberry Pi to collect data on soil moisture, temperature, humidity, and light intensity. A backend service communicates with the Raspberry Pi via RabbitMQ, logs sensor data to a MongoDB database, and sends control data back to the Raspberry Pi, which can also operate actuators for environmental control. A web and mobile application allows the end user to add devices to their account, view sensor data, and set desired parameters. Flutter provides the frontend and interfaces with MongoDB via a REST API implemented in Dart.
