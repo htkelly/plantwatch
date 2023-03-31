@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+message Command {
+  float minTemp = 1;
+  float maxTemp = 2;
+  float minHum = 3;
+  float maxHum = 4;
+  float minMoist = 5;
+  float maxMoist = 6;
+}

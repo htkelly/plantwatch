@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+message Reading {
+  string _id = 1;
+  string deviceId = 2;
+  string timestamp = 3;
+  float temperature = 4;
+  float humidity = 5;
+  float moisture = 6;
+  float uvIndex = 7;
+}
