@@ -1,4 +1,10 @@
+# Environmental variables
 .env
+
+# Python cache
 __pycache__/
+
+# Seeed studio libraries
 grove_moisture_sensor.py
 seeed_si115x.py
+grove_relay.py
