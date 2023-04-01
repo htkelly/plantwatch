@@ -71,8 +71,11 @@ class DeviceApi {
         "minMoist": minMoist,
         "maxMoist": maxMoist
       };
+      var token = await FirebaseAuth.instance.currentUser!.getIdToken();
       var requestUrl = Uri.http(baseUrl, "/devices/${device.id.toHexString()}");
-      var response = await http.put(requestUrl, body: json.encode(parameters));
+      var response = await http.put(requestUrl,
+          headers: {"Authorization": "Bearer ${token}"},
+          body: json.encode(parameters));
       print(response);
     } catch (e) {
       print(e);
