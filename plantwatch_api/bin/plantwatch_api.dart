@@ -64,8 +64,8 @@ main(List<String> arguments) async {
         request.response.close();
       }
       // This handler is required so that this route will work without disabling CORS/web security on the frontend application
-    } else if (request.uri.path.startsWith("/devices") ||
-        request.uri.path.startsWith("/readings") &&
+    } else if ((request.uri.path.startsWith("/devices") ||
+        request.uri.path.startsWith("/readings")) &&
             request.method == 'OPTIONS') {
       request.response.statusCode = HttpStatus.OK;
       request.response.close();
