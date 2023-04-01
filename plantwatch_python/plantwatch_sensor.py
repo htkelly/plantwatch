@@ -10,6 +10,8 @@ import pika
 import json
 from google.protobuf import json_format
 import reading_pb2
+import heartbeat_pb2
+import command_pb2
 from dotenv import dotenv_values
 from seeed_si115x import grove_si115x
 from grove_moisture_sensor import GroveMoistureSensor
@@ -160,9 +162,11 @@ class Plantwatcher:
         if method_frame:
             try:
                 self.rabbitChannel.basic_ack(method_frame.delivery_tag)
+                commandMsg = command_pb2.Command()
+                commandMsg.ParseFromString(body)
                 receivedParams = json.loads(body)
                 logging.info("Command received")
-                self.parameters = receivedParams
+                self.parameters = json_format.MessageToDict(commandMsg)
             except Exception as error:
                 logging.error("An error happened while acknowledging, parsing, and saving parameters received from RabbitMQ")
                 logging.error(error)
@@ -172,12 +176,20 @@ class Plantwatcher:
 
     # This function sends a message to RabbitMQ indicate the device is still online 
     def sendHeartbeatMessage(self):
-        deviceInfo={}
-        deviceInfo['_id']=str(self.id)
-        deviceInfo['latestReading']=self.latestReading.reading_data['_id']
+        try:
+            deviceInfo={}
+            deviceInfo['_id']=str(self.id)
+            deviceInfo['latestReading']=self.latestReading.reading_data['_id']
+            heartbeatMsg = heartbeat_pb2.Heartbeat()
+            heartbeatJson = json.dumps(deviceInfo)
+            json_format.Parse(heartbeatJson, heartbeatMsg)
+        except Exception as error:
+            logging.error("An error happened while serializing heartbeat message")
+            logging.error(error)
+            logging.error("This is not a catastrophic error. Continuing...")
         try:
             self.rabbitChannel.queue_declare(queue=f"plantwatch_heartbeat")
-            self.rabbitChannel.basic_publish(exchange='', routing_key="plantwatch_heartbeat", body=json.dumps(deviceInfo))
+            self.rabbitChannel.basic_publish(exchange='', routing_key="plantwatch_heartbeat", body=heartbeatMsg.SerializeToString())
             logging.info("Sent heartbeat message")
         except Exception as error:
             logging.error("An error occurred while sending a hearbeat message")
