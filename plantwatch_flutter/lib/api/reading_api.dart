@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
@@ -22,8 +23,10 @@ class ReadingApi {
 
   static Future<Map<String, dynamic>?> getReadingById(String id) async {
     try {
+      var token = await FirebaseAuth.instance.currentUser!.getIdToken();
       var requestUrl = Uri.http(baseUrl, "/readings/${id}");
-      var response = await http.get(requestUrl);
+      var response = await http
+          .get(requestUrl, headers: {"Authorization": "Bearer ${token}"});
       return json.decode(response.body);
     } catch (e) {
       print(e);
