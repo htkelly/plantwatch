@@ -134,7 +134,11 @@ class Plantwatcher:
         try:
             readingMsg = reading_pb2.Reading()
             readingJson = json.dumps(readingData)
-            json_format.Parse(json_string, readingMsg)
+            json_format.Parse(readingJson, readingMsg)
+        except Exception as error:
+            logging.error("An error happened while serializing reading message")
+            logging.error(error)
+            logging.error("This is not a catastrophic error. Continuing...")
         try:
             self.rabbitChannel.queue_declare(queue=f"plantwatch_readings")
             self.rabbitChannel.basic_publish(exchange='', routing_key="plantwatch_readings", body=readingMsg.SerializeToString())
