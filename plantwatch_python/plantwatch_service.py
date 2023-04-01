@@ -14,7 +14,7 @@ from google.protobuf.json_format import MessageToDict
 from pymongo import MongoClient
 from dotenv import dotenv_values
 
-env_vars = dotenv_values("../.env")
+env_vars = dotenv_values(".env")
 
 # This class represents the state and functionality of the Plantwatch backend service
 class PlantwatchService:
@@ -47,7 +47,7 @@ class PlantwatchService:
         try:
             readingMsg = reading_pb2.Reading()
             readingMsg.ParseFromString(body)
-            reading = MessageToDict(readingMsg)
+            reading = MessageToDict(readingMsg, preserving_proto_field_name=True)
         except Exception as error:
             logging.error("An error happened when trying to parse reading message. The message may have been malformed.")
             logging.error(error)
@@ -66,7 +66,7 @@ class PlantwatchService:
         try:
             heartbeatMsg = heartbeat_pb2.Heartbeat()
             heartbeatMsg.ParseFromString(body)
-            device = MessageToDict(heartbeatMsg)
+            device = MessageToDict(heartbeatMsg, preserving_proto_field_name=True)
         except Exception as error:
             logging.error("An error happened when trying to parse heartbeat message. The message may have been malformed.")
             logging.error(error)
