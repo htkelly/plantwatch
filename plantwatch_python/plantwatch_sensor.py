@@ -164,9 +164,8 @@ class Plantwatcher:
                 self.rabbitChannel.basic_ack(method_frame.delivery_tag)
                 commandMsg = command_pb2.Command()
                 commandMsg.ParseFromString(body)
-                receivedParams = json.loads(body)
-                logging.info("Command received")
                 self.parameters = json_format.MessageToDict(commandMsg)
+                logging.info("Command received")
             except Exception as error:
                 logging.error("An error happened while acknowledging, parsing, and saving parameters received from RabbitMQ")
                 logging.error(error)
