@@ -183,6 +183,20 @@ main(List<String> arguments) async {
         request.response.write('Internal server error');
         request.response.close();
       }
+    } else if (request.uri.path.startsWith("/readings") &&
+        request.method == 'GET') {
+      if (request.uri.pathSegments.length == 1) {
+        request.response.statusCode = HttpStatus.OK;
+        request.response
+            .write(json.encode(await readingCollection.find().toList()));
+        request.response.close();
+        return;
+      } else if (request.uri.pathSegments.length == 2) {
+        request.response.write(await json.encode(await readingCollection
+            .findOne(where.eq("_id", request.uri.pathSegments[1]))));
+        request.response.close();
+        return;
+      }
     } else {
       request.response.statusCode = HttpStatus.notFound;
       request.response.write("Route not found");
