@@ -9,7 +9,7 @@ import sys
 import reading_pb2
 import heartbeat_pb2
 import command_pb2
-from google.protobuf.json_format import MessageToJson
+from google.protobuf.json_format import Parse
 from google.protobuf.json_format import MessageToDict
 from pymongo import MongoClient
 from dotenv import dotenv_values
@@ -86,7 +86,7 @@ class PlantwatchService:
                 try:
                     commandMsg = command_pb2.Command()
                     commandJson = json.dumps(foundDevice['parameters'])
-                    json_format.parse(commandJson, commandMsg)
+                    Parse(commandJson, commandMsg)
                     self.channel.basic_publish(exchange='', routing_key=str(device['_id']), body=commandMsg.SerializeToString())
                 except Exception as error:
                     logging.error("An error happened when serializing and sending command message")
