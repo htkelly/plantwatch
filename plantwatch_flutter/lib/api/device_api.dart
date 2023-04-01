@@ -49,8 +49,10 @@ class DeviceApi {
 
   static Future<List<dynamic>> getDeviceReadings(String deviceId) async {
     try {
+      var token = await FirebaseAuth.instance.currentUser!.getIdToken();
       var requestUrl = Uri.http(baseUrl, "/devices/$deviceId/readings");
-      var response = await http.get(requestUrl);
+      var response = await http
+          .get(requestUrl, headers: {"Authorization": "Bearer ${token}"});
       return json.decode(response.body);
     } catch (e) {
       print(e);
