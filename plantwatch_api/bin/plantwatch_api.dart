@@ -35,6 +35,12 @@ main(List<String> arguments) async {
     } else if (request.uri.path == "/devices" && request.method == 'GET') {
       try {
         var auth = request.headers['Authorization'];
+        if (auth == null){
+          request.response.statusCode = HttpStatus.unauthorized;
+          request.response.write('Unauthorized');
+          request.response.close();
+          return;
+        }
         var token = await fb.auth().verifyIdToken(auth![0].split(' ')[1]);
         if (token == null ||
             token.claims == null ||
@@ -68,6 +74,12 @@ main(List<String> arguments) async {
       try {
         var deviceId = request.uri.pathSegments[1];
         var auth = request.headers['Authorization'];
+          if (auth == null){
+          request.response.statusCode = HttpStatus.unauthorized;
+          request.response.write('Unauthorized');
+          request.response.close();
+          return;
+        }
         var token = await fb.auth().verifyIdToken(auth![0].split(' ')[1]);
         var device = await deviceCollection.findOne(where.eq("_id", deviceId));
         if (device == null) {
@@ -76,7 +88,9 @@ main(List<String> arguments) async {
           request.response.close();
           return;
         }
-        if (device['userId'] != token.claims.subject) {
+        if (token == null ||
+            token.claims == null ||
+            device['userId'] != token.claims.subject) {
           request.response.statusCode = HttpStatus.unauthorized;
           request.response.write('Unauthorized');
           request.response.close();
@@ -101,6 +115,12 @@ main(List<String> arguments) async {
       try {
         var deviceId = request.uri.pathSegments[1];
         var auth = request.headers['Authorization'];
+        if (auth == null){
+          request.response.statusCode = HttpStatus.unauthorized;
+          request.response.write('Unauthorized');
+          request.response.close();
+          return;
+        }
         var token = await fb.auth().verifyIdToken(auth![0].split(' ')[1]);
         if (token == null ||
             token.claims == null ||
@@ -108,6 +128,7 @@ main(List<String> arguments) async {
           request.response.statusCode = HttpStatus.unauthorized;
           request.response.write('Unauthorized');
           request.response.close();
+          return;
         }
         var device = await deviceCollection.findOne(where.eq("_id", deviceId));
         device!["userId"] = token.claims.subject;
