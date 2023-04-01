@@ -1,6 +1,6 @@
 syntax = "proto3";
 
 message Heartbeat {
-  string _id = 1;
-  string latestReading = 2;
+  optional string _id = 1;
+  optional string latestReading = 2;
 }
