@@ -6,6 +6,11 @@ import ast
 import datetime
 import json
 import sys
+import reading_pb2
+import heartbeat_pb2
+import command_pb2
+from google.protobuf.json_format import MessageToJson
+from google.protobuf.json_format import MessageToDict
 from pymongo import MongoClient
 from dotenv import dotenv_values
 
@@ -40,7 +45,9 @@ class PlantwatchService:
     def readingReceived(self, ch, method, properties, body):
         logging.info(f"Received a reading: {body}")
         try:
-            reading = ast.literal_eval(body.decode('UTF-8'))
+            readingMsg = reading_pb2.Reading()
+            readingMsg.ParseFromString(body)
+            reading = MessageToDict(readingMsg)
         except Exception as error:
             logging.error("An error happened when trying to parse reading message. The message may have been malformed.")
             logging.error(error)

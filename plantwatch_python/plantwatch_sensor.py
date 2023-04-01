@@ -8,6 +8,8 @@ import time
 import datetime
 import pika
 import json
+from google.protobuf import json_format
+import reading_pb2
 from dotenv import dotenv_values
 from seeed_si115x import grove_si115x
 from grove_moisture_sensor import GroveMoistureSensor
@@ -130,8 +132,12 @@ class Plantwatcher:
     # This function sends a message to RabbitMQ with a reading from the device
     def sendReadingMessage(self, readingData):
         try:
+            readingMsg = reading_pb2.Reading()
+            readingJson = json.dumps(readingData)
+            json_format.Parse(json_string, readingMsg)
+        try:
             self.rabbitChannel.queue_declare(queue=f"plantwatch_readings")
-            self.rabbitChannel.basic_publish(exchange='', routing_key="plantwatch_readings", body=str(readingData))
+            self.rabbitChannel.basic_publish(exchange='', routing_key="plantwatch_readings", body=readingMsg.SerializeToString())
             logging.info(f"Sent reading id {readingData['_id']}")
         except Exception as error:
             logging.error("An error happened while sending a reading message")
