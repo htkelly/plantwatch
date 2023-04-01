@@ -14,7 +14,7 @@ from google.protobuf.json_format import MessageToDict
 from pymongo import MongoClient
 from dotenv import dotenv_values
 
-env_vars = dotenv_values(".env")
+env_vars = dotenv_values("../.env")
 
 # This class represents the state and functionality of the Plantwatch backend service
 class PlantwatchService:
@@ -64,7 +64,9 @@ class PlantwatchService:
     def heartbeatReceived(self, ch, method, properties, body):
         logging.info(f"Received a heartbeat: {body}")
         try:
-            device = ast.literal_eval(body.decode('UTF-8'))
+            heartbeatMsg = heartbeat_pb2.Heartbeat()
+            heartbeatMsg.ParseFromString(body)
+            device = MessageToDict(heartbeatMsg)
         except Exception as error:
             logging.error("An error happened when trying to parse heartbeat message. The message may have been malformed.")
             logging.error(error)
@@ -82,9 +84,12 @@ class PlantwatchService:
             if ("parameters" in foundDevice):
                 logging.info(f"Parameters are set for {device['_id']}: {foundDevice['parameters']}, sending command message")
                 try:
-                    self.channel.basic_publish(exchange='', routing_key=str(device['_id']), body=str(json.dumps(foundDevice['parameters'])))
+                    commandMsg = command_pb2.Command()
+                    commandJson = json.dumps(foundDevice['parameters'])
+                    json_format.parse(commandJson, commandMsg)
+                    self.channel.basic_publish(exchange='', routing_key=str(device['_id']), body=commandMsg.SerializeToString())
                 except Exception as error:
-                    logging.error("An error happened when sending command message")
+                    logging.error("An error happened when serializing and sending command message")
                     logging.error(error)
                     logging.error("This is not a catastrophic error. Continuing...")
         try:
