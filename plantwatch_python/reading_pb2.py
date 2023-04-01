@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rreading.proto\"\x85\x01\n\x07Reading\x12\x0b\n\x03_id\x18\x01 \x01(\t\x12\x10\n\x08\x64\x65viceId\x18\x02 \x01(\t\x12\x11\n\ttimestamp\x18\x03 \x01(\t\x12\x13\n\x0btemperature\x18\x04 \x01(\x02\x12\x10\n\x08humidity\x18\x05 \x01(\x02\x12\x10\n\x08moisture\x18\x06 \x01(\x02\x12\x0f\n\x07uvIndex\x18\x07 \x01(\x02\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rreading.proto\"\x81\x02\n\x07Reading\x12\x10\n\x03_id\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x15\n\x08\x64\x65viceId\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\x16\n\ttimestamp\x18\x03 \x01(\tH\x02\x88\x01\x01\x12\x18\n\x0btemperature\x18\x04 \x01(\x02H\x03\x88\x01\x01\x12\x15\n\x08humidity\x18\x05 \x01(\x02H\x04\x88\x01\x01\x12\x15\n\x08moisture\x18\x06 \x01(\x02H\x05\x88\x01\x01\x12\x14\n\x07uvIndex\x18\x07 \x01(\x02H\x06\x88\x01\x01\x42\x06\n\x04X_idB\x0b\n\t_deviceIdB\x0c\n\n_timestampB\x0e\n\x0c_temperatureB\x0b\n\t_humidityB\x0b\n\t_moistureB\n\n\x08_uvIndexb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -22,5 +22,5 @@ if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
   _globals['_READING']._serialized_start=18
-  _globals['_READING']._serialized_end=151
+  _globals['_READING']._serialized_end=275
 # @@protoc_insertion_point(module_scope)

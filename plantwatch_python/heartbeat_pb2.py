@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fheartbeat.proto\"/\n\tHeartbeat\x12\x0b\n\x03_id\x18\x01 \x01(\t\x12\x15\n\rlatestReading\x18\x02 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fheartbeat.proto\"S\n\tHeartbeat\x12\x10\n\x03_id\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x1a\n\rlatestReading\x18\x02 \x01(\tH\x01\x88\x01\x01\x42\x06\n\x04X_idB\x10\n\x0e_latestReadingb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -22,5 +22,5 @@ if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
   _globals['_HEARTBEAT']._serialized_start=19
-  _globals['_HEARTBEAT']._serialized_end=66
+  _globals['_HEARTBEAT']._serialized_end=102
 # @@protoc_insertion_point(module_scope)
