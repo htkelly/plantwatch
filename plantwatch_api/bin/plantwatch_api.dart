@@ -23,82 +23,147 @@ main(List<String> arguments) async {
   var deviceCollection = db.collection(DEVICE_COLLECTION);
   var readingCollection = db.collection(READING_COLLECTION);
 
-server.listen((HttpRequest request) async {
-  if (request.uri.path == "/") {
+  server.listen((HttpRequest request) async {
     request.response.headers.add("Access-Control-Allow-Origin", "*");
     request.response.headers.add("Access-Control-Allow-Headers", "*");
-    request.response.headers.add("Access-Control-Allow-Methods", "POST,GET,DELETE,PUT,OPTIONS");
-    request.response.statusCode = HttpStatus.OK;
-    request.response.write("Plantwatch API");
-    request.response.close();
-  } else if (request.uri.path == "/devices" && request.method == 'GET') {
-    request.response.headers.add("Access-Control-Allow-Origin", "*");
-    request.response.headers.add("Access-Control-Allow-Headers", "*");
-    request.response.headers.add("Access-Control-Allow-Methods", "POST,GET,DELETE,PUT,OPTIONS");
-    var auth = request.headers['Authorization'];
-    var token = await fb.auth().verifyIdToken(auth![0].split(' ')[1]);
-    request.response.statusCode = HttpStatus.OK;
-    request.response.write(json.encode(await deviceCollection.find(where.eq("userId", token.claims.subject)).toList()));
-    request.response.close();
-    } else if (request.uri.path.startsWith("/devices") && request.method == 'OPTIONS') {
+    request.response.headers
+        .add("Access-Control-Allow-Methods", "POST,GET,DELETE,PUT,OPTIONS");
+    if (request.uri.path == "/") {
+      request.response.statusCode = HttpStatus.OK;
+      request.response.write("Hello! This is the Plantwatch API");
+      request.response.close();
+    } else if (request.uri.path == "/devices" && request.method == 'GET') {
+      try {
+        var auth = request.headers['Authorization'];
+        var token = await fb.auth().verifyIdToken(auth![0].split(' ')[1]);
+        if (token == null ||
+            token.claims == null ||
+            token.claims.subject == null) {
+          request.response.statusCode = HttpStatus.unauthorized;
+          request.response.write('Unauthorized');
+          request.response.close();
+        } else {
+          var devices = await deviceCollection
+              .find(where.eq("userId", token.claims.subject))
+              .toList();
+          request.response.statusCode = HttpStatus.OK;
+          request.response.write(json.encode(devices));
+          request.response.close();
+        }
+      } catch (e) {
+        request.response.statusCode = HttpStatus.internalServerError;
+        request.response.write('Internal Server Error');
+        request.response.close();
+      }
+    } else if (request.uri.path.startsWith("/devices") &&
+        request.method == 'OPTIONS') {
       // This is required so that this route will work without disabling CORS/web security on the frontend application
-        request.response.headers.add("Access-Control-Allow-Origin", "*");
-        request.response.headers.add("Access-Control-Allow-Headers", "*");
-        request.response.headers.add("Access-Control-Allow-Methods", "POST,GET,DELETE,PUT,OPTIONS");
-        request.response.statusCode = HttpStatus.OK;
-        request.response.close();
-    } else if (request.uri.path.startsWith("/devices") && request.method == 'PUT' && request.uri.pathSegments.length == 2) {
-        var deviceId = request.uri.pathSegments[1];
-        var device = await deviceCollection.findOne(where.eq("_id", deviceId));
-        var content = await utf8.decoder.bind(request).join();
-        var parameters = json.decode(content);
-        device!["parameters"] = parameters;
-        await deviceCollection.save(device);
-        request.response.headers.add("Access-Control-Allow-Origin", "*");
-        request.response.headers.add("Access-Control-Allow-Headers", "*");
-        request.response.headers.add("Access-Control-Allow-Methods", "POST,GET,DELETE,PUT,OPTIONS");
-        request.response.statusCode = HttpStatus.accepted;
-        request.response.write(json.encode(device));
-        request.response.close();
-  } else if (request.uri.path.startsWith("/devices") && request.method == 'PUT' && request.uri.pathSegments.length == 3 && request.uri.pathSegments[2] == 'user') {
+      request.response.statusCode = HttpStatus.OK;
+      request.response.close();
+    } else if (request.uri.path.startsWith("/devices") &&
+        request.method == 'PUT' &&
+        request.uri.pathSegments.length == 2) {
+      try {
         var deviceId = request.uri.pathSegments[1];
         var auth = request.headers['Authorization'];
         var token = await fb.auth().verifyIdToken(auth![0].split(' ')[1]);
         var device = await deviceCollection.findOne(where.eq("_id", deviceId));
-        device!["userId"] = token.claims.subject;
+        if (device == null) {
+          request.response.statusCode = HttpStatus.notFound;
+          request.response.write('Device not found');
+          request.response.close();
+          return;
+        }
+        if (device['userId'] != token.claims.subject) {
+          request.response.statusCode = HttpStatus.unauthorized;
+          request.response.write('Unauthorized');
+          request.response.close();
+          return;
+        }
+        var content = await utf8.decoder.bind(request).join();
+        var parameters = json.decode(content);
+        device["parameters"] = parameters;
         await deviceCollection.save(device);
-        request.response.headers.add("Access-Control-Allow-Origin", "*");
-        request.response.headers.add("Access-Control-Allow-Headers", "*");
-        request.response.headers.add("Access-Control-Allow-Methods", "POST,GET,DELETE,PUT,OPTIONS");
         request.response.statusCode = HttpStatus.accepted;
         request.response.write(json.encode(device));
         request.response.close();
-  } else if (request.uri.path.startsWith("/devices") && request.method == 'GET' && request.uri.pathSegments.length == 3 && request.uri.pathSegments[2] == 'readings') {
-        var deviceId = request.uri.pathSegments[1];
-        request.response.write(await json.encode(await readingCollection.find(where.eq("deviceId", deviceId)).toList()));
-        request.response.close();
-  } else if (request.uri.path.startsWith("/readings") && request.method == 'GET'){
-      if (request.uri.pathSegments.length == 1) {
-        request.response.headers.add("Access-Control-Allow-Origin", "*");
-        request.response.headers.add("Access-Control-Allow-Headers", "*");
-        request.response.headers.add("Access-Control-Allow-Methods", "POST,GET,DELETE,PUT,OPTIONS");
-        request.response.statusCode = HttpStatus.OK;
-        request.response.write(json.encode(await readingCollection.find().toList()));
-        request.response.close();
-      } else if (request.uri.pathSegments.length == 2){
-        request.response.headers.add("Access-Control-Allow-Origin", "*");
-        request.response.headers.add("Access-Control-Allow-Headers", "*");
-        request.response.headers.add("Access-Control-Allow-Methods", "POST,GET,DELETE,PUT,OPTIONS");
-        request.response.write(await json.encode(await readingCollection.findOne(where.eq("_id", request.uri.pathSegments[1]))));
+      } catch (e) {
+        request.response.statusCode = HttpStatus.internalServerError;
+        request.response.write('Internal Server Error');
         request.response.close();
       }
-  } else {
-    request.response.headers.add("Access-Control-Allow-Origin", "*");
-    request.response.headers.add("Access-Control-Allow-Headers", "*");
-    request.response.headers.add("Access-Control-Allow-Methods", "POST,GET,DELETE,PUT,OPTIONS");
-    request.response.statusCode = HttpStatus.badRequest;
-    request.response.write("Bad request");
-    request.response.close();
-  }
-});
+    } else if (request.uri.path.startsWith("/devices") &&
+        request.method == 'PUT' &&
+        request.uri.pathSegments.length == 3 &&
+        request.uri.pathSegments[2] == 'user') {
+      try {
+        var deviceId = request.uri.pathSegments[1];
+        var auth = request.headers['Authorization'];
+        var token = await fb.auth().verifyIdToken(auth![0].split(' ')[1]);
+        if (token == null ||
+            token.claims == null ||
+            token.claims.subject == null) {
+          request.response.statusCode = HttpStatus.unauthorized;
+          request.response.write('Unauthorized');
+          request.response.close();
+        }
+        var device = await deviceCollection.findOne(where.eq("_id", deviceId));
+        device!["userId"] = token.claims.subject;
+        await deviceCollection.save(device);
+        request.response.statusCode = HttpStatus.accepted;
+        request.response.write(json.encode(device));
+        request.response.close();
+      } catch (e) {
+        request.response.statusCode = HttpStatus.internalServerError;
+        request.response.write('Internal server error');
+        request.response.close();
+      }
+    } else if (request.uri.path.startsWith("/devices") &&
+        request.method == 'GET' &&
+        request.uri.pathSegments.length == 3 &&
+        request.uri.pathSegments[2] == 'readings') {
+      try {
+        var deviceId = request.uri.pathSegments[1];
+        var device = await deviceCollection.findOne(where.eq("_id", deviceId));
+        var auth = request.headers['Authorization'];
+        var token = await fb.auth().verifyIdToken(auth![0].split(' ')[1]);
+        if (device == null) {
+          request.response.statusCode = HttpStatus.notFound;
+          request.response.write('Device not found');
+          request.response.close();
+          return;
+        }
+        if (device['userId'] != token.claims.subject) {
+          request.response.statusCode = HttpStatus.unauthorized;
+          request.response.write('Unauthorized');
+          request.response.close();
+          return;
+        }
+        request.response.write(await json.encode(await readingCollection
+            .find(where.eq("deviceId", deviceId))
+            .toList()));
+        request.response.close();
+      } catch (e) {
+        request.response.statusCode = HttpStatus.internalServerError;
+        request.response.write('Internal server error');
+        request.response.close();
+      }
+    } else if (request.uri.path.startsWith("/readings") &&
+        request.method == 'GET') {
+      if (request.uri.pathSegments.length == 1) {
+        request.response.statusCode = HttpStatus.OK;
+        request.response
+            .write(json.encode(await readingCollection.find().toList()));
+        request.response.close();
+      } else if (request.uri.pathSegments.length == 2) {
+        request.response.write(await json.encode(await readingCollection
+            .findOne(where.eq("_id", request.uri.pathSegments[1]))));
+        request.response.close();
+      }
+    } else {
+      request.response.statusCode = HttpStatus.notFound;
+      request.response.write("Route not found");
+      request.response.close();
+    }
+  });
 }
