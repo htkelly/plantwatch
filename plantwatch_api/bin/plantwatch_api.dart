@@ -42,6 +42,7 @@ main(List<String> arguments) async {
           request.response.statusCode = HttpStatus.unauthorized;
           request.response.write('Unauthorized');
           request.response.close();
+          return;
         } else {
           var devices = await deviceCollection
               .find(where.eq("userId", token.claims.subject))
@@ -49,6 +50,7 @@ main(List<String> arguments) async {
           request.response.statusCode = HttpStatus.OK;
           request.response.write(json.encode(devices));
           request.response.close();
+          return;
         }
       } catch (e) {
         request.response.statusCode = HttpStatus.internalServerError;
@@ -126,6 +128,12 @@ main(List<String> arguments) async {
         var deviceId = request.uri.pathSegments[1];
         var device = await deviceCollection.findOne(where.eq("_id", deviceId));
         var auth = request.headers['Authorization'];
+        if (auth == null){
+          request.response.statusCode = HttpStatus.unauthorized;
+          request.response.write('Unauthorized');
+          request.response.close();
+          return;
+        }
         var token = await fb.auth().verifyIdToken(auth![0].split(' ')[1]);
         if (device == null) {
           request.response.statusCode = HttpStatus.notFound;
@@ -133,7 +141,9 @@ main(List<String> arguments) async {
           request.response.close();
           return;
         }
-        if (device['userId'] != token.claims.subject) {
+        if (token == null ||
+            token.claims == null ||
+            device['userId'] != token.claims.subject) {
           request.response.statusCode = HttpStatus.unauthorized;
           request.response.write('Unauthorized');
           request.response.close();
@@ -155,10 +165,12 @@ main(List<String> arguments) async {
         request.response
             .write(json.encode(await readingCollection.find().toList()));
         request.response.close();
+        return;
       } else if (request.uri.pathSegments.length == 2) {
         request.response.write(await json.encode(await readingCollection
             .findOne(where.eq("_id", request.uri.pathSegments[1]))));
         request.response.close();
+        return;
       }
     } else {
       request.response.statusCode = HttpStatus.notFound;
