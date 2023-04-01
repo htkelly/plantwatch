@@ -32,6 +32,7 @@ main(List<String> arguments) async {
       request.response.statusCode = HttpStatus.OK;
       request.response.write("Hello! This is the Plantwatch API");
       request.response.close();
+      // This handler gets devices associated with the logged in user's account
     } else if (request.uri.path == "/devices" && request.method == 'GET') {
       try {
         var auth = request.headers['Authorization'];
@@ -63,11 +64,12 @@ main(List<String> arguments) async {
         request.response.write('Internal Server Error');
         request.response.close();
       }
+      // This handler is required so that this route will work without disabling CORS/web security on the frontend application
     } else if (request.uri.path.startsWith("/devices") &&
         request.method == 'OPTIONS') {
-      // This is required so that this route will work without disabling CORS/web security on the frontend application
       request.response.statusCode = HttpStatus.OK;
       request.response.close();
+      // This handler sets parameters on a device
     } else if (request.uri.path.startsWith("/devices") &&
         request.method == 'PUT' &&
         request.uri.pathSegments.length == 2) {
@@ -108,6 +110,7 @@ main(List<String> arguments) async {
         request.response.write('Internal Server Error');
         request.response.close();
       }
+      // This handler associates a device with a user account
     } else if (request.uri.path.startsWith("/devices") &&
         request.method == 'PUT' &&
         request.uri.pathSegments.length == 3 &&
@@ -141,6 +144,7 @@ main(List<String> arguments) async {
         request.response.write('Internal server error');
         request.response.close();
       }
+      // This handler returns readings associated with a device
     } else if (request.uri.path.startsWith("/devices") &&
         request.method == 'GET' &&
         request.uri.pathSegments.length == 3 &&
@@ -178,20 +182,6 @@ main(List<String> arguments) async {
         request.response.statusCode = HttpStatus.internalServerError;
         request.response.write('Internal server error');
         request.response.close();
-      }
-    } else if (request.uri.path.startsWith("/readings") &&
-        request.method == 'GET') {
-      if (request.uri.pathSegments.length == 1) {
-        request.response.statusCode = HttpStatus.OK;
-        request.response
-            .write(json.encode(await readingCollection.find().toList()));
-        request.response.close();
-        return;
-      } else if (request.uri.pathSegments.length == 2) {
-        request.response.write(await json.encode(await readingCollection
-            .findOne(where.eq("_id", request.uri.pathSegments[1]))));
-        request.response.close();
-        return;
       }
     } else {
       request.response.statusCode = HttpStatus.notFound;
