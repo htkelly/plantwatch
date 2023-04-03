@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 from bson import ObjectId
-import smbus
 import sys
 import logging
 import time
@@ -15,6 +14,7 @@ import command_pb2
 from dotenv import dotenv_values
 from seeed_si115x import grove_si115x
 from grove_moisture_sensor import GroveMoistureSensor
+from grove_temperature_humidity_aht20 import GroveTemperatureHumidityAHT20
 from grove_relay import GroveRelay
 from gpiozero import LED
 
@@ -57,8 +57,7 @@ class Plantwatcher:
             logging.error(error)
             sys.exit("Exiting. Could not initialize.")
         try:
-            self.i2cbus = smbus.SMBus(1)
-            self.DHT20_I2C_ADDRESS = 0x38
+            self.tempHumSensor = GroveTemperatureHumidityAHT20()
             self.lightSensor = grove_si115x()
             self.parameters = {}
             self.latestReading = None
@@ -96,21 +95,14 @@ class Plantwatcher:
             sys.exit("Exiting gracefully. Could not connect to Rabbit MQ")
         logging.info(f"Device initialized with id {self.id} at {str(self.initTime)}")
 
-    # Adapted from this SO answer: https://raspberrypi.stackexchange.com/questions/133457/how-can-rpi4b-use-python-to-talk-to-the-i2c-dht20-sht20-temperature-and-humidi
-    # This function reads data from DHT20 sensor and uses bitwise operations/masking to return the data as floats
+    # This function reads data from DHT20 sensor
     def getTemperatureAndHumidity(self):
         try:
-            self.i2cbus.write_i2c_block_data(self.DHT20_I2C_ADDRESS,0xac, [0x33, 0x00])
-            time.sleep(0.1)
-            tempHumData = self.i2cbus.read_i2c_block_data(self.DHT20_I2C_ADDRESS, 0x71, 7)
+           temperature, humidity = self.tempHumSensor.read()
         except Exception as error:
             logging.error("An error happened while reading data from DHT20 over I2C bus")
             logging.error(error)
             sys.exit("Exiting gracefully. There is a problem with the DHT20 sensor")
-        Traw = ((tempHumData[3] & 0xf) << 16) + (tempHumData[4] << 8) + tempHumData[5]
-        temperature = 200*float(Traw)/2**20 - 50
-        Hraw = ((tempHumData[3] & 0xf0) >> 4) + (tempHumData[1] << 12) + (tempHumData[2] << 4)
-        humidity = 100*float(Hraw)/2**20
         return temperature,humidity
 
     #  Using functionality exposed by the Grove library, this function gets the UV index from the light sensor

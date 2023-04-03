@@ -6,5 +6,6 @@ __pycache__/
 
 # Seeed studio libraries
 grove_moisture_sensor.py
+grove_temperature_humidity_aht20.py
 seeed_si115x.py
 grove_relay.py
