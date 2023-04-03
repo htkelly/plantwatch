@@ -103,7 +103,7 @@ class _DeviceCardState extends State<DeviceCard> {
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
-                    fontSize: 20)),
+                    fontSize: 15)),
           )),
     );
   }
