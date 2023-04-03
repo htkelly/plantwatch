@@ -34,7 +34,7 @@ Plantwatch is an IoT plant health monitoring and care system that utilises elect
     - Plantwatch API service
         - You'll need the Dart runtime on this server, and this library:
             - https://pub.dev/packages/firebase_admin
-
+- Somewhere to host the Flutter frontend application
 
 ## What resources did you consult to build this?
 Here's a list of things I found useful while building this project:
