@@ -48,6 +48,8 @@ class PlantwatchService:
             readingMsg = reading_pb2.Reading()
             readingMsg.ParseFromString(body)
             reading = MessageToDict(readingMsg, preserving_proto_field_name=True)
+            #This should be fixed by defining moisture as an int in the protobuf schema. Rounding it here to squash a bug for the time being. 
+            reading['moisture']=round(reading['moisture'])
         except Exception as error:
             logging.error("An error happened when trying to parse reading message. The message may have been malformed.")
             logging.error(error)
