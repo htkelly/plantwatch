@@ -1,12 +1,14 @@
-# What's this?
+# Plantwatch
+
+## What's this?
 Plantwatch is an IoT plant health monitoring and care system that utilises electronic sensors and a Raspberry Pi to collect data on soil moisture, temperature, humidity, and light intensity. A backend service communicates with the Raspberry Pi via RabbitMQ, logs sensor data to a MongoDB database, and sends control data back to the Raspberry Pi, which can also operate actuators for environmental control. A web and mobile application allows the end user to add devices to their account, view sensor data, and set desired parameters. Flutter provides the frontend and interfaces with MongoDB via a REST API implemented in Dart.
 
-# Got a demo?
+## Got a demo?
 Demo video will go here when complete.
 
-# What do I need to deploy it?
+## What do I need to deploy it?
 
-## Sensor Device
+### Sensor Device
 - Raspberry Pi 4 model B running Raspbian and with the following
     - Python 3.x
     - pika library (https://pika.readthedocs.io/en/stable/)
@@ -23,7 +25,7 @@ Demo video will go here when complete.
 - LEDs and resistors
 - Before running plantwatch_sensor.py, you'll need to configure a .env file with the hostname and credentials for RabbitMQ access
 
-## Infrastructure
+### Infrastructure
 - A linux server (Debian recommended) for each of the following
     - RabbitMQ
         - Installation guide here: https://www.rabbitmq.com/install-debian.html
@@ -45,14 +47,14 @@ Demo video will go here when complete.
 - A Firebase project to handle user authentication
 - Somewhere to host the frontend application (Firebase Hosting recommended)
 
-## Networking requirements
+### Networking requirements
 When configuring networking for the project infrastructure, bear in mind the following
 - RabbitMQ must be able to receive AMQP connections on TCP port 5671 from the outside world and from the worker service
 - MongoDB must be able to receive connections on TCP port 27017 from the worker service and from the REST API service, but should not be reachable from the outside world
 - The worker service must be able make connections to RabbitMQ on TCP port 5671 and MongoDB on TCP port 27017, but does not need to contact the outside world
 - The REST API service must be able to receive http connections on TCP port 8085 from the outside world and must be able to reach MongoDB on TCP port 27017
 
-# What resources did you consult to build this?
+### What resources did you consult to build this?
 Here's a list of things I found useful while building this project:
 
 - https://www.python-engineer.com/posts/dotenv-python/
