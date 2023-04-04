@@ -1,10 +1,12 @@
-# Plantwatch
-## What's this?
+# What's this?
 Plantwatch is an IoT plant health monitoring and care system that utilises electronic sensors and a Raspberry Pi to collect data on soil moisture, temperature, humidity, and light intensity. A backend service communicates with the Raspberry Pi via RabbitMQ, logs sensor data to a MongoDB database, and sends control data back to the Raspberry Pi, which can also operate actuators for environmental control. A web and mobile application allows the end user to add devices to their account, view sensor data, and set desired parameters. Flutter provides the frontend and interfaces with MongoDB via a REST API implemented in Dart.
 
-## What do I need to deploy it?
+# Got a demo?
+Demo video will go here when complete.
 
-### Sensor Device
+# What do I need to deploy it?
+
+## Sensor Device
 - Raspberry Pi 4 model B running Raspbian and with the following
     - Python 3.x
     - pika library (https://pika.readthedocs.io/en/stable/)
@@ -19,24 +21,38 @@ Plantwatch is an IoT plant health monitoring and care system that utilises elect
 - 12v water pump
 - Seeed Studio Grove Relay
 - LEDs and resistors
+- Before running plantwatch_sensor.py, you'll need to configure a .env file with the hostname and credentials for RabbitMQ access
 
-### Infrastructure
+## Infrastructure
 - A linux server (Debian recommended) for each of the following
     - RabbitMQ
         - Installation guide here: https://www.rabbitmq.com/install-debian.html
+        - You'll need to configure a non-default user account, which both the sensor device and the worker service will use to authenticate
     - MongoDB
         - Installation guide here: https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-debian/
+        - You'll need to edit /etc/mongod.conf to bind to the server IP address
     - Plantwatch worker service
         - You'll need Python 3.x on this server, and these libraries:
             - https://pymongo.readthedocs.io/en/stable/
             - https://pika.readthedocs.io/en/stable/
             - https://pypi.org/project/protobuf/
+        - You'll need to configure a .env file with RabbitMQ credentials, and hostnames or IP addresses for the MongoDB and RabbitMQ servers
     - Plantwatch API service
         - You'll need the Dart runtime on this server, and this library:
             - https://pub.dev/packages/firebase_admin
-- Somewhere to host the Flutter frontend application
+        - You'll need to configure a .env file with the IP address the API service should bind to, and a hostname or IP address for the MongoDB server
+        - You'll need to configure a service-account.json file with a private key for a Firebase service account, which the API will use for JWT validation
+- A Firebase project to handle user authentication
+- Somewhere to host the frontend application (Firebase Hosting recommended)
 
-## What resources did you consult to build this?
+## Networking requirements
+When configuring networking for the project infrastructure, bear in mind the following
+- RabbitMQ must be able to receive AMQP connections on TCP port 5671 from the outside world and from the worker service
+- MongoDB must be able to receive connections on TCP port 27017 from the worker service and from the REST API service, but should not be reachable from the outside world
+- The worker service must be able make connections to RabbitMQ on TCP port 5671 and MongoDB on TCP port 27017, but does not need to contact the outside world
+- The REST API service must be able to receive http connections on TCP port 8085 from the outside world and must be able to reach MongoDB on TCP port 27017
+
+# What resources did you consult to build this?
 Here's a list of things I found useful while building this project:
 
 - https://www.python-engineer.com/posts/dotenv-python/
