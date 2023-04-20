@@ -3,6 +3,10 @@
 ## What's this?
 Plantwatch is an IoT plant health monitoring and care system that utilises electronic sensors and a Raspberry Pi to collect data on soil moisture, temperature, humidity, and light intensity. A backend service communicates with the Raspberry Pi via RabbitMQ, logs sensor data to a MongoDB database, and sends control data back to the Raspberry Pi, which can also operate actuators for environmental control. A web and mobile application allows the end user to add devices to their account, view sensor data, and set desired parameters. Flutter provides the frontend and interfaces with MongoDB via a REST API implemented in Dart.
 
+## Where can I read more?
+
+You can view the project proposal [here](https://github.com/htkelly/plantwatch/blob/main/docs/HarryKelly_20095354_ProjectProposal_Final.pdf) and the final report [here](https://github.com/htkelly/plantwatch/blob/main/docs/HarryKelly_20095354_ProjectFinalReport_Submission.pdf).
+
 ## Got a demo?
 Sure! Click the thumbnail below to watch the demo on YouTube.
 
@@ -56,7 +60,7 @@ When configuring networking for the project infrastructure, bear in mind the fol
 - The worker service must be able make connections to RabbitMQ on TCP port 5671 and MongoDB on TCP port 27017, but does not need to contact the outside world
 - The REST API service must be able to receive http connections on TCP port 8085 from the outside world and must be able to reach MongoDB on TCP port 27017
 
-### What resources did you consult to build this?
+## What resources did you consult to build this?
 Here's a list of things I found useful while building this project:
 
 - https://www.python-engineer.com/posts/dotenv-python/
