@@ -5,7 +5,7 @@ Plantwatch is an IoT plant health monitoring and care system that utilises elect
 
 ## Where can I read more?
 
-You can view the project proposal [here](https://github.com/htkelly/plantwatch/blob/main/docs/HarryKelly_20095354_ProjectProposal_Final.pdf) and the final report [here](https://github.com/htkelly/plantwatch/blob/main/docs/HarryKelly_20095354_ProjectFinalReport_Submission.pdf).
+You can view the project proposal [here](https://github.com/htkelly/plantwatch/blob/main/docs/HarryKelly_20095354_ProjectProposal_Final.pdf) and the final report [here](https://github.com/htkelly/plantwatch/blob/main/docs/HarryKelly_20095354_ProjectFinalReport_Submission.pdf). The project presentation slide deck can be downloaded [here](https://github.com/htkelly/plantwatch/raw/main/docs/HarryKelly_20095354_ProjectPresentation.pptx).
 
 ## Got a demo?
 Sure! Click the thumbnail below to watch the demo on YouTube.
